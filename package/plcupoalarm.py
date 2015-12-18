@@ -4,6 +4,7 @@ import re
 from subprocess import Popen, PIPE
 import argparse
 from sets import Set
+import boto
 
 
 def isNotBlank(myString):

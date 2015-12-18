@@ -8,5 +8,8 @@ setup(name = "plc-upo-alarm",
     url = "alanbertadev.com",
     packages = ['package'],
     package_data = {'package' : files },
-    scripts = ["plc-upo-alarm"]
+    scripts = ["plc-upo-alarm"],
+    install_requires=[
+        "boto"
+    ]
 ) 
