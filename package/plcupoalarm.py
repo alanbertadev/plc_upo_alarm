@@ -23,12 +23,12 @@ def extractMacAddress(ampStatLine):
     return macAddr
 
 
-def publishToSnsTopic(allowedMacAddresses, detectedMacAddresses, topicARN, topicRegion):
+def publishToSnsTopic(allowedMacAddresses, invasiveMacAddresses, topicARN, topicRegion):
     if isNotBlank(topicARN):
         print "sending alert sns to topic ARN({})".format(topicARN)
         message = """
 Intruder detected!
-The EoP network contains unidentified powerline object(s): {}""".format(detectedMacAddresses)
+The EoP network contains unidentified powerline object(s): {}""".format(invasiveMacAddresses)
         conn = boto.sns.connect_to_region(topicRegion)
         pub = conn.publish(topic=topicARN, message=message)
     else:
@@ -53,7 +53,6 @@ def start():
     alertRegion = args.region
     validMacAddresses = args.macs
 
-
     cmd = "ampstat -m -i {}".format(device)
     process = Popen(shlex.split(cmd), stdout=PIPE)
     (output, err) = process.communicate()
@@ -67,15 +66,16 @@ def start():
         if macAddr is not None:
             # Check if mac address is allowed on the network
             intruderDetected = False
-            detectedMacAddresses.append(macAddr)
             if macAddr in validMacAddresses:
                 print "{}".format(macAddr)
             else:
+                detectedMacAddresses.append(macAddr)
                 print "{} <-- INTRUDER DETECTED".format(macAddr)
                 intruderDetected = True
 
     if intruderDetected:
-        publishToSnsTopic(validMacAddresses, detectedMacAddresses, alertSNS, alertRegion)
+        publishToSnsTopic(
+            validMacAddresses, detectedMacAddresses, alertSNS, alertRegion)
 
 
 if __name__ == "__main__":
