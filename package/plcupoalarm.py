@@ -4,7 +4,7 @@ import re
 from subprocess import Popen, PIPE
 import argparse
 from sets import Set
-import boto
+import boto.sns
 
 
 def isNotBlank(myString):
@@ -23,11 +23,16 @@ def extractMacAddress(ampStatLine):
     return macAddr
 
 
-def publishToSnsTopic(allowedMacAddresses, detectedMacAddresses, emailAddress):
-    if isNotBlank(emailAddress):
-        print "sending alert email to {}".format(emailAddress)
-
-        print "TODO send to SNS thing"
+def publishToSnsTopic(allowedMacAddresses, detectedMacAddresses, topicARN, topicRegion):
+    if isNotBlank(topicARN):
+        print "sending alert sns to topic ARN({})".format(topicARN)
+        message = """
+Intruder detected!
+The EoP network contains unidentified powerline object(s): {}""".format(detectedMacAddresses)
+        conn = boto.sns.connect_to_region(topicRegion)
+        pub = conn.publish(topic=topicARN, message=message)
+    else:
+        print "unable to send alert sns because of blank topic ARN!"
 
 
 def start():
@@ -36,14 +41,18 @@ def start():
     parser.add_argument(
         '-i', help='active network interface with proximity to an EoP device (default: eth0)', default="eth0")
     parser.add_argument(
-        '-e', help='email to alert in the event that an unidentified MAC address is present on the EoP network', default="")
+        '--arn', help='AWS SNS topic ARN to notify of unidentified powerline objects', default="")
+    parser.add_argument(
+        '--region', help='AWS region that contains the given topic (default: us-east-1)', default="us-east-1")
     parser.add_argument(
         '--macs', nargs='+', help='one or more mac addresses that are allowed to be on the EoP network', default=[])
 
     args = parser.parse_args()
     device = args.i
-    alertEmail = args.e
+    alertSNS = args.arn
+    alertRegion = args.region
     validMacAddresses = args.macs
+
 
     cmd = "ampstat -m -i {}".format(device)
     process = Popen(shlex.split(cmd), stdout=PIPE)
@@ -66,7 +75,7 @@ def start():
                 intruderDetected = True
 
     if intruderDetected:
-        publishToSnsTopic(validMacAddresses, detectedMacAddresses, alertEmail)
+        publishToSnsTopic(validMacAddresses, detectedMacAddresses, alertSNS, alertRegion)
 
 
 if __name__ == "__main__":
