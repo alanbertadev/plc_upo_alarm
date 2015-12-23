@@ -20,4 +20,31 @@ cd plc_upo_alarm
 python setup.py install
 ```
 
+Usage
+-----------
+```
+plc-upo-alarm -h
+usage: plc-upo-alarm [-h] [-i I] [--arn ARN] [--region REGION]
+                     [--macs MACS [MACS ...]]
+
+Check a set of valid mac addresses against an EoP (Ethernet over Powerline)
+network and alert an optional email if an intruder is present
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -i I                  active network interface with proximity to an EoP
+                        device (default: eth0)
+  --arn ARN             AWS SNS topic ARN to notify of unidentified powerline
+                        objects
+  --region REGION       AWS region that contains the given topic (default: us-
+                        east-1)
+  --macs MACS [MACS ...]
+                        one or more mac addresses that are allowed to be on
+                        the EoP network
+```
+
+Example:
+```
+plc-upo-alarm -i eth0 --arn arn:aws:sns:us-east-1:<your topic id>:<topic name> --region us-east-1 --macs C5:E9:84:5E:C1:81 C4:E9:88:5E:8A:B4
+```
 
