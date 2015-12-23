@@ -7,3 +7,17 @@ The vulnerability allows attackers to gain access to a powerline network. The at
 
 ** Note ** This is a work-around and is not ideal.
 
+Requirements
+-----------
+* [boto 2.38.0](https://pypi.python.org/pypi/boto/)
+* Compiled and installed copy of [open-plc-utils](https://github.com/qca/open-plc-utils). This is provided as a submodule in the plc_upo_alarm repository.
+* An AWS account with a properly configured [SNS Topic](http://docs.aws.amazon.com/sns/latest/dg/CreateTopic.html)
+
+Installation
+-----------
+```
+cd plc_upo_alarm
+python setup.py install
+```
+
+
