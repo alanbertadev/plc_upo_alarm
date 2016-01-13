@@ -7,6 +7,10 @@ The vulnerability allows attackers to gain access to a powerline network. The at
 
 ** Note ** This is a work-around and is not ideal.
 
+Read more about how this tool works:
+http://www.alanbertadev.com/ethernet-over-powerline-dak-attack-alarm-system/
+http://www.alanbertadev.com/ethernet-over-powerline-dak-attack-alarm-system-part-2/
+
 Requirements
 -----------
 * [boto 2.38.0](https://pypi.python.org/pypi/boto/)
